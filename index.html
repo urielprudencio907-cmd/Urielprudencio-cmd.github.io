@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema Ciudadano COPACI</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e9fffc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #164e63;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+        h2 {
+            color: #08a6a6;
+            margin-top: 0;
+            text-align: center;
+        }
+        p.sub {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .campo {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #9ddbd8;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #08a6a6;
+            color: white;
+            text-align: center;
+        }
+        .btn:hover {
+            background: #087f8c;
+        }
+        #errorMsg {
+            color: #d95d6a;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        .ayuda-credenciales {
+            margin-top: 20px;
+            background: #f1fffd;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid #bfe5e2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Control Ciudadano</h2>
+    <p class="sub">Inicia sesión con tus credenciales</p>
+    
+    <form id="formLogin" onsubmit="procesarLogin(event)">
+        <div class="campo">
+            <label>Usuario:</label>
+            <input type="text" id="usuarioInput" placeholder="Ej: vecino o copaci" required autocomplete="off">
+        </div>
+        
+        <div class="campo">
+            <label>Contraseña:</label>
+            <input type="password" id="passwordInput" placeholder="Introduce tu contraseña" required>
+        </div>
+
+        <button class="btn" type="submit">Ingresar</button>
+        <p id="errorMsg">Usuario o contraseña incorrectos.</p>
+    </form>
+
+    <div class="ayuda-credenciales">
+        <strong>Datos de prueba para entrar:</strong><br>
+        • <em>Ciudadano:</em> usuario: <b>vecino</b> / pass: <b>vecino123</b><br>
+        • <em>COPACI:</em> usuario: <b>copaci</b> / pass: <b>copaci2026</b>
+    </div>
+</div>
+
+<script>
+    function procesarLogin(e) {
+        e.preventDefault();
+        
+        const usuario = document.getElementById("usuarioInput").value.trim().toLowerCase();
+        const pass = document.getElementById("passwordInput").value;
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (usuario === "copaci" && pass === "copaci2026") {
+            window.location.href = "copaci.html"; 
+        } else if (usuario === "vecino" && pass === "vecino123") {
+            window.location.href = "ciudadano.html"; 
+        } else {
+            errorMsg.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>

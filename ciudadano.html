@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Ciudadano - COPACI</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e9fffc;
+            color: #164e63;
+        }
+        header {
+            background: #08a6a6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+        .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.08);
+            margin-bottom: 20px;
+        }
+        h2 { color: #08a6a6; margin-top: 0; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .campo { display: flex; flex-direction: column; }
+        .completo { grid-column: 1 / -1; }
+        label { margin-bottom: 6px; font-weight: bold; }
+        input, select, textarea {
+            padding: 10px; border: 1px solid #9ddbd8; border-radius: 6px; font-size: 15px;
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        .boton {
+            background: #08a6a6; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 15px;
+        }
+        .boton:hover { background: #087f8c; }
+        .tabla-contenedor { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #bfe5e2; padding: 10px; text-align: left; }
+        th { background: #08a6a6; color: white; }
+        .estado { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .pendiente { background: #ffeeba; color: #856404; }
+        .revisado { background: #d1ecf1; color: #0c5460; }
+        .atendido { background: #d8f8f4; color: #087f7b; }
+        .volver { display: inline-block; margin-bottom: 15px; color: #087f8c; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Portal Ciudadano</h1>
+    <p>Consejo de Participación Ciudadana - COPACI</p>
+</header>
+
+<main>
+    <a href="login.html" class="volver">← Volver al inicio de sesión</a>
+
+    <!-- REGISTRAR REPORTE -->
+    <div class="panel">
+        <h2>Reportar un problema comunitario</h2>
+        <form id="formReportePublico">
+            <div class="campo">
+                <label>Tu Nombre Completo:</label>
+                <input type="text" id="nombreReporte" required>
+            </div>
+            <div class="campo">
+                <label>Tipo de Reporte:</label>
+                <select id="tipoReporte" required>
+                    <option value="">Seleccionar...</option>
+                    <option>Alumbrado público</option>
+                    <option>Basura</option>
+                    <option>Seguridad</option>
+                    <option>Agua</option>
+                    <option>Calles y baches</option>
+                    <option>Áreas verdes</option>
+                    <option>Otro</option>
+                </select>
+            </div>
+            <div class="campo completo">
+                <label>Descripción detallada y ubicación:</label>
+                <textarea id="descripcionReporte" required></textarea>
+            </div>
+            <div class="campo">
+                <label>Fecha:</label>
+                <input type="date" id="fechaReporte" required>
+            </div>
+            <div class="campo completo">
+                <button class="boton" type="submit">Enviar Reporte al COPACI</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- VER EVENTOS COMUNITARIOS -->
+    <div class="panel">
+        <h2>Próximos Eventos y Reuniones</h2>
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Fecha y Hora</th>
+                        <th>Lugar</th>
+                        <th>Estatus</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaEventosPublicos"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Cargar datos guardados
+    let reportes = JSON.parse(localStorage.getItem("reportes")) || [];
+    let eventos = JSON.parse(localStorage.getItem("eventos")) || [];
+
+    // Registrar reporte desde el portal ciudadano
+    document.getElementById("formReportePublico").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        reportes.push({
+            id: Date.now(),
+            ciudadano: document.getElementById("nombreReporte").value,
+            tipo: document.getElementById("tipoReporte").value,
+            descripcion: document.getElementById("descripcionReporte").value,
+            fecha: document.getElementById("fechaReporte").value,
+            estado: "Pendiente" // Entra por defecto como pendiente para que el COPACI lo revise
+        });
+
+        localStorage.setItem("reportes", JSON.stringify(reportes));
+        alert("¡Reporte enviado con éxito! El COPACI lo revisará pronto.");
+        this.reset();
+    });
+
+    // Mostrar solo eventos activos/programados para la comunidad
+    function mostrarEventosPublicos() {
+        const tabla = document.getElementById("tablaEventosPublicos");
+        tabla.innerHTML = "";
+
+        if (eventos.length === 0) {
+            tabla.innerHTML = `<tr><td colspan="4" style="text-align: center;">No hay eventos registrados por el momento.</td></tr>`;
+            return;
+        }
+
+        eventos.forEach(ev => {
+            tabla.innerHTML += `
+                <tr>
+                    <td><strong>${ev.nombre}</strong></td>
+                    <td>${ev.fecha} a las ${ev.hora}</td>
+                    <td>${ev.lugar}</td>
+                    <td><span class="estado ${ev.estado === 'Concluido' ? 'atendido' : 'pendiente'}">${ev.estado}</span></td>
+                </tr>
+            `;
+        });
+    }
+
+    mostrarEventosPublicos();
+</script>
+
+</body>
+</html>
